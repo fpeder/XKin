@@ -1,0 +1,45 @@
+# -*- Doc -*-
+:Author: Fabrizio Pedersoli
+:Email: <pedersoli.fabrizio@gmail.com>
+
+== XKin
+
+eXtensible hand pose and gesture recognition library for Kinect
+
+=== Description
+
+XKin is an open source library that enables users to build
+hand gesture based applications employing Kinect sensor.. Hand Gesture
+recognition comes in two ways: static hand pose (posture) and dynamic
+hand movement (gesture). For this purpose this package provides four
+libraries: 
+
+- libbody (body detection)
+- libhand (hand detection and contour extraction)
+- libposture (posture classification)
+- libgesture (hand trajectory movement classification)
+
+This package comes also with some useful tool for training and testing
+the models (posture and gesture).
+
+=== Requirements 
+
+In order to compile XKin you will need:
+
+- cmake (>=2.6)
+- libfreenect (https://github.com/OpenKinect/libfreenect)
+- OpenCV (http://sourceforge.net/projects/opencvlibrary/files)
+- fftw (http://www.fftw.org/download.html)
+
+=== Compile
+
+This procedure use ccmake, the console gui of cmake, to configure the
+project and generated unix makefiles for compilation:
+
+- go to the source folder 
+- make a directory like build/ and go to that
+- type ccmake .. (sometimes configuration may fail if some library
+  dependencies is installed in a non standard path, from the gui it's
+  possibile to specify manually libraries and inclue) 
+- type make (compile all the stuff)
+
