@@ -1,6 +1,6 @@
-# -*- Doc -*-
+// -*- Doc -*-
 :Author: Fabrizio Pedersoli
-:Email: <pedersoli.fabrizio@gmail.com>
+:Email: <f.peder@gmail.com>
 
 == XKin
 
@@ -34,12 +34,12 @@ In order to compile XKin you will need:
 === Compile
 
 This procedure use ccmake, the console gui of cmake, to configure the
-project and generated unix makefiles for compilation:
+project and generate unix makefiles for compilation:
 
 - go to the source folder 
 - make a directory like build/ and go to that
 - type ccmake .. (sometimes configuration may fail if some library
   dependencies is installed in a non standard path, from the gui it's
-  possibile to specify manually libraries and inclue) 
+  possibile to specify manually libraries and include) 
 - type make (compile all the stuff)
 
