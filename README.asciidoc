@@ -22,6 +22,35 @@ libraries:
 This package comes also with some useful tool for training and testing
 the models (posture and gesture).
 
+=== Demo
+
+This package provides also some demostration videos of two simple
+gesture applications that comes with XKin. One video shows a posture
+based application which is an implementation of the rock papper scissor
+game. 
+!
+image:doc/imgs/demoposture.png[]
+
+The other video illustrates a gesture based application. In this case
+is implemented a basic image gallery application, the interaction is
+done by using four gesture that enable the user to perform zoom (in/out)
+navigation (previous/next) operations. 
+
+image:doc/imgs/demogesture.png[]
+
+// ==== Example of hand detection 
+
+// Starting from the Kinect depth image with XKin is easily possible to
+// extract the body and the hand. The images below depicts the processing
+// sequence which is achieved by +body_detection+ and +hand_detection+
+// function.
+
+// [grid="none", frame="none", format="csv"]
+// [width="85%", align="center", cols="3*^"]
+// |======
+// image:doc/imgs/depth.png[], image:doc/imgs/body.png[], image:doc/imgs/hand.png[]
+// |======
+
 === Requirements 
 
 In order to compile XKin you will need:
@@ -36,10 +65,10 @@ In order to compile XKin you will need:
 This procedure use ccmake, the console gui of cmake, to configure the
 project and generate unix makefiles for compilation:
 
-- go to the source folder 
-- make a directory like build/ and go to that
-- type ccmake .. (sometimes configuration may fail if some library
+- +cd+ to the source folder
+- +mkdir+ a directory like +build/+ and +cd+ to that
+- type +ccmake ..+ (sometimes configuration may fail if some library
   dependencies is installed in a non standard path, from the gui it's
-  possibile to specify manually libraries and include) 
-- type make (compile all the stuff)
+  possibile to specify manually libraries and include)
+- type +make+ (compile all the stuff)
 
