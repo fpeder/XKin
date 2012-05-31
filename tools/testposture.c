@@ -95,9 +95,9 @@ int main (int argc, char *argv[])
 
 	cvDestroyAllWindows();
 	cvReleaseImage(&rgb);
-	cvReleaseImage(&depth);
-	cvReleaseImage(&body);
-	cvReleaseImage(&hand);
+	//cvReleaseImage(&depth);
+	//cvReleaseImage(&body);
+	//cvReleaseImage(&hand);
 	
 	return 0;
 }
