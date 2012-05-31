@@ -28,7 +28,7 @@ This package provides also some demostration videos of two simple
 gesture applications that comes with XKin. One video shows a posture
 based application which is an implementation of the rock papper scissor
 game. 
-!
+
 image:doc/imgs/demoposture.png[]
 
 The other video illustrates a gesture based application. In this case
