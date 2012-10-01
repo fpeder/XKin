@@ -11,8 +11,10 @@ enum {
 	MIN_AREA=200,
 	HAND_CLOSE=1,
 	HAND_OPEN=0,
-	FD_NUM=16,
-	SAMPLES_NUM=384
+	FD_NUM=8,
+	SAMPLES_NUM=256
 };
+
+// 12 384
 
 #endif /* _CONST_H_ */

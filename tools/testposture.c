@@ -35,17 +35,19 @@
 #include <assert.h>
 #include <opencv2/core/core_c.h>
 #include <opencv2/highgui/highgui_c.h>
-#include <libfreenect/libfreenect_sync.h>
-#include <libfreenect/libfreenect_cv.h>
+#include <libfreenect_sync.h>
+#include <libfreenect_cv.h>
 
 #include "../include/libbody.h"
 #include "../include/libhand.h"
 #include "../include/libposture.h"
 
+#define WT CV_GUI_NORMAL | CV_WINDOW_AUTOSIZE
+
 enum {
         W=640,
         H=480,
-        T=30,
+        T=10,
 };
 
 char *infile = NULL;
@@ -57,15 +59,23 @@ void       parse_args               (int,char**);
 
 int main (int argc, char *argv[])
 {
-	IplImage *rgb, *depth, *body, *hand;
+	IplImage *rgb, *depth, *body, *hand, *number;
 	CvPostModel *models;
 	int num, count=0;
+	char *w1 = "rgb", *w2 = "number";
+	char buff[5];
+	CvFont font; 
 
 	parse_args(argc,argv);
-
-	rgb = cvCreateImage(cvSize(W,H), 8, 3);
 	num = load_posture_models(infile, &models);
+	rgb = cvCreateImage(cvSize(W,H), 8, 3);
+	number = cvCreateImage(cvSize(256,256), 8, 3);
+	font = cvFontQt("Helvetica", 200, CV_RGB(255,0,0), CV_FONT_NORMAL,
+			CV_STYLE_NORMAL, 0);
 
+	cvNamedWindow(w1, WT);
+	cvNamedWindow(w2, WT);
+	
 	for (;;) {
 		IplImage *tmp;
 		CvSeq *cnt;
@@ -75,7 +85,6 @@ int main (int argc, char *argv[])
 		tmp = freenect_sync_get_rgb_cv(0);
 		cvCvtColor(tmp, rgb, CV_BGR2RGB);
 		depth = freenect_sync_get_depth_cv(0);
-
 		body = body_detection(depth);
 		hand = hand_detection(body, &z);
 
@@ -86,18 +95,21 @@ int main (int argc, char *argv[])
 			continue;
 
 		draw_classified_hand(cnt, cent, p);
+		cvShowImage(w1, rgb);
+		cvMoveWindow(w1, 640, 0);
+		sprintf(buff, "%d", p+1);
+		cvZero(number);
+		cvAddText(number, buff, cvPoint(80,190), &font);
+		cvShowImage(w2, number);
+		cvMoveWindow(w2, 0, 530);
 
 		if ((k = cvWaitKey(T)) == 'q')
 			break;
 	}
 
 	freenect_sync_stop();
-
 	cvDestroyAllWindows();
 	cvReleaseImage(&rgb);
-	//cvReleaseImage(&depth);
-	//cvReleaseImage(&body);
-	//cvReleaseImage(&hand);
 	
 	return 0;
 }

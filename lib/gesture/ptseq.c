@@ -234,7 +234,7 @@ void ptseq_draw (ptseq seq, int flag)
 		
 	if (flag==1) 
 		cvWaitKey(0);
-	else if (flag >50)
+	else if (flag > 1)
 		cvWaitKey(flag);
 	
 	cvReleaseImage(&img);

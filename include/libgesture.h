@@ -39,7 +39,7 @@ typedef struct CvHMM {
 } CvHMM;
 
 CvHMM       cvhmm_from_gesture_proto     (const char *infile);
-int         cvhmm_classify_gesture       (CvHMM *mo, int num, ptseq seq, int debug);
+int         cvhmm_classify_gesture       (CvHMM *mo, int num, ptseq seq, FILE *pf);
 int         cvhmm_get_gesture_sequence   (int posture, CvPoint pt, ptseq *seq);
 CvHMM       cvhmm_blr_init               (int N, int M, double pii, double pij);
 void        cvhmm_free                   (CvHMM mo);

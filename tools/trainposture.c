@@ -35,8 +35,8 @@
 #include <unistd.h>
 #include <opencv2/core/core_c.h>
 #include <opencv2/imgproc/imgproc_c.h>
-#include <libfreenect/libfreenect_sync.h>
-#include <libfreenect/libfreenect_cv.h>
+#include <libfreenect_sync.h>
+#include <libfreenect_cv.h>
 
 #include "../include/libbody.h"
 #include "../include/libhand.h"
@@ -64,7 +64,7 @@ int main (int argc, char *argv[])
 	IplImage *rgb, *depth, *tmp, *body, *hand;
 	CvMat **tr, *mean, *cov;
 	CvFileStorage *fs;
-	int count=0, p=0;
+	int count=0, p=0, warmup=1;
 
 	parse_args(argc, argv);
 
@@ -85,30 +85,39 @@ int main (int argc, char *argv[])
 		tmp = freenect_sync_get_rgb_cv(0);
 		cvCvtColor(tmp, rgb, CV_BGR2RGB);
 		depth = freenect_sync_get_depth_cv(0);
-
 		body = body_detection(depth);
 		hand = hand_detection(body, &z);
 
 		if (!get_hand_contour_advanced(hand, rgb, z, &cnt, NULL))
 		 	continue; 
 
+		if (warmup) {
+			draw_contour(cnt);
+			if (k = cvWaitKey(T) == 'g') {
+				warmup = 0;
+				cvDestroyAllWindows();
+			}
+			continue;
+		}
+
 		fd = get_fourier_descriptors(cnt);
 		add_training_data(tr[count], fd);
+
+		if (count == 0)
+			printf("---> training hand pose %d\n", p);
 
 		if (++count == num) {
 			int c;
 
 			cvCalcCovarMatrix((void*)tr, count, cov, mean, CV_COVAR_NORMAL);
 			cvInvert(cov, cov, CV_LU);
-
 			save_posture_model(fs, mean, cov);
-
 			p++;
 			count = 0;
+
+			printf("save and quit:s  exit:q  next:any \n");
 			
-			printf("save and quit:s  exit:q  next:any  ");
-			
-			if ((c = getchar()) == 's') {
+			if ((c = cvWaitKey(0)) == 's') {
 				break;
 			} else if (c == 'q') {
 				break;

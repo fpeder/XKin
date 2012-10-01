@@ -9,7 +9,7 @@ eXtensible hand pose and gesture recognition library for Kinect
 === Description
 
 XKin is an open source library that enables users to build
-hand gesture based applications employing Kinect sensor.. Hand Gesture
+hand gesture based applications employing Kinect sensor. Hand Gesture
 recognition comes in two ways: static hand pose (posture) and dynamic
 hand movement (gesture). For this purpose this package provides four
 libraries: 
@@ -71,4 +71,3 @@ project and generate unix makefiles for compilation:
   dependencies is installed in a non standard path, from the gui it's
   possibile to specify manually libraries and include)
 - type +make+ (compile all the stuff)
-

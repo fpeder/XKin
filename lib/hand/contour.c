@@ -197,14 +197,13 @@ static IplImage *hand_rgb_segmentation (IplImage* rgb, CvRect roi)
 	cvSetImageROI(rgb, roi);
 	cvCopy(rgb, tmp, NULL);
 	cvResetImageROI(rgb);
-
 	cvCvtColor(tmp, tmp, CV_RGB2YCrCb);
-     
 	cvSplit(tmp, NULL, NULL, asd, NULL);
-	cvSmooth(asd, asd, CV_MEDIAN, 5, 5,0 ,0);
-	strel = cvCreateStructuringElementEx(3,3,0,0,CV_SHAPE_ELLIPSE, NULL);
-	cvMorphologyEx(asd, asd, NULL, strel, CV_MOP_OPEN, 3);
+	cvSmooth(asd, asd, CV_GAUSSIAN, 7, 7, 0, 0);
+	cvSmooth(asd, asd, CV_MEDIAN, 7, 7, 0 ,0);
 	cvThreshold(asd, asd, 0, 255, CV_THRESH_OTSU);
+	strel = cvCreateStructuringElementEx(3,3,0,0,CV_SHAPE_ELLIPSE, NULL);
+	cvMorphologyEx(asd, asd, NULL, strel, CV_MOP_CLOSE, 3);
 
 	cvReleaseImage(&tmp);
 

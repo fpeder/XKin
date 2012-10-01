@@ -1,4 +1,4 @@
-/*  
+/*
  * Copyright (c) 2012, Fabrizio Pedersoli
  * All rights reserved.
  *
@@ -26,12 +26,15 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-  
+
+
 #include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <pthread.h>
+#include <string.h>
 #include <opencv2/core/core_c.h>
 #include <opencv2/highgui/highgui_c.h>
 #include <libfreenect_sync.h>
@@ -45,51 +48,56 @@
 enum {
         W=640,
         H=480,
-        T=20,
+        T=30,
 };
 
-char *infile = NULL;
+char *outfile = NULL;
+int N = 0;
 
-void        parse_args          (int, char**);
-void        usage               (void);
+
+IplImage* draw_depth_hand (CvSeq *cnt, int type);
+void parse_args (int argc, char**argv);
+void save_sequence (const char *file, ptseq seq, int N);
+void usage ();
 
 
 int main (int argc, char *argv[])
 {
-	IplImage *depth, *body, *hand, *tmp;
 	CvHMM *models;
-	int num;
+	char *win = "hand";
+	int num, count=0, curr=1; 
 	ptseq seq;
-
+	
 	parse_args(argc,argv);
 	seq = ptseq_init();
-	models = cvhmm_read(infile, &num);
-
+	
 	for (;;) {
+		IplImage *depth, *tmp, *body, *hand;
 		CvSeq *cnt;
 		CvPoint cent;
-		int z, p, g, k;
-
+		int z, p, k; 
+		
 		depth = freenect_sync_get_depth_cv(0);
 		body = body_detection(depth);
 		hand = hand_detection(body, &z);
-
+		
 		if (!get_hand_contour_basic(hand, &cnt, &cent))
 			continue;
-
+		
 		if ((p = basic_posture_classification(cnt)) == -1)
 			continue;
-
-		draw_classified_hand(cnt, cent, p);
-
-		if(cvhmm_get_gesture_sequence(p, cent, &seq)) {
-			int g;
-
-			g = cvhmm_classify_gesture(models, num, seq, stdout);
-			printf("%d\n\n", g+1);
-			ptseq_draw(seq, 20);
-
+		
+		if (cvhmm_get_gesture_sequence(p, cent, &seq)) {
+			ptseq_draw(seq, 0);
+			if ((k = cvWaitKey(0)) == 's') {
+				save_sequence(outfile, seq, N);
+				break;
+			}
+			seq = ptseq_reset(seq);
 		}
+		
+		hand = draw_depth_hand(cnt, p);
+		cvShowImage("hand", hand);
 
 		if ((k = cvWaitKey(T)) == 'q')
 			break;
@@ -97,19 +105,49 @@ int main (int argc, char *argv[])
 
 	freenect_sync_stop();
 	cvDestroyAllWindows();
-	
+
 	return 0;
 }
+	
+IplImage* draw_depth_hand (CvSeq *cnt, int type)
+{
+        static IplImage *img = NULL;
+        CvScalar color[] = {CV_RGB(255,0,0), CV_RGB(0,255,0)};
 
-void parse_args (int argc, char **argv)
+        if (img == NULL)
+                img = cvCreateImage(cvSize(W, H), 8, 3);
+
+        cvZero(img);
+        cvDrawContours(img, cnt, color[type], CV_RGB(0,0,255), 0,
+                       CV_FILLED, 8, cvPoint(0,0));
+
+        cvFlip(img, NULL, 1);
+
+        return img;
+}
+
+void save_sequence (const char *file, ptseq seq, int N)
+{
+	CvFileStorage *fs;
+
+	fs = cvOpenFileStorage(file, NULL, CV_STORAGE_WRITE, NULL);
+	cvWriteInt(fs, "N", N);
+	cvWrite(fs, "seq", seq.ptr, cvAttrList(0,0));
+	cvReleaseFileStorage(&fs);
+}
+
+void parse_args (int argc, char**argv)
 {
 	int c;
-
-	opterr=0;
-	while ((c = getopt(argc,argv,"i:h")) != -1) {
+	
+	opterr = 0;
+	while ((c = getopt(argc, argv, "o:n:h")) != -1) {
 		switch (c) {
-		case 'i':
-			infile = optarg;
+		case 'o':
+			outfile = optarg;
+			break;
+		case 'n':
+			N = atoi(optarg);
 			break;
 		case 'h':
 		default:
@@ -117,16 +155,16 @@ void parse_args (int argc, char **argv)
 			exit(-1);
 		}
 	}
-	if (infile == NULL) {
+	if (outfile==NULL || N==0) {
 		usage();
 		exit(-1);
 	}
 }
 
-void usage (void)
+void usage ()
 {
-	printf("usage: testgesture -i [file] -h\n");
-	printf("  -i  gestures models yml file\n");
-	printf("  -h  show this message\n");
-			
+	printf("usage: genprotoslive -o [file] -n [num]\n");
+	printf("  -o  output file\n");
+	printf("  -n  number of state\n");
 }
+

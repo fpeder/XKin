@@ -80,10 +80,42 @@ void get_hand_interval (IplImage *body, int *interval)
 	fill_mat(body, data);
 
 	min = kmeans_clustering(data, means, par);
+
 	//var = get_cluster_var(data, par);
 
 	interval[0] = min;
 	interval[1] = (int)cvmGet(means, 0, 0); //- var;
+
+	cvReleaseMat(&data);
+	cvReleaseMat(&par);
+	cvReleaseMat(&means);
+}
+
+void get_hand_interval_2 (IplImage *body, int *interval)
+{
+	CvMat *data, *labels, *means;
+	int count;
+
+#define CLUSTERS 2
+	
+	count = cvCountNonZero(body);
+	data = cvCreateMat(count, 1, CV_32FC1);
+	labels = cvCreateMat(count, 1, CV_32SC1);
+	means = cvCreateMat(CLUSTERS, 1, CV_32FC1);
+
+	fill_mat(body, data);
+	cvKMeans2(data, CLUSTERS, labels,
+		  cvTermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 10, 10.0),
+		  1, 0, 0, means, 0);
+
+	double tmp;
+	cvMinMaxLoc(body, &tmp, NULL, NULL, NULL, NULL);
+	interval[0] = tmp;
+	cvMinMaxLoc(means, &tmp, NULL, NULL, NULL, NULL);
+	interval[1] = tmp;
+		  
+	cvReleaseMat(&data);
+	cvReleaseMat(&labels);
 }
 
 /*!

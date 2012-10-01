@@ -85,27 +85,29 @@ CvHMM cvhmm_from_gesture_proto (const char *infile)
  * \param[in]   flags to display overall lls
  * \return      classification index
  */
-int cvhmm_classify_gesture (CvHMM *mo, int num, ptseq seq, int debug)
+int cvhmm_classify_gesture (CvHMM *mo, int num, ptseq seq, FILE* pf)
 {
 	CvMat *O;
 	int i, argmax = -1;
 	double ll, max = -1e8;
-
+	
 	O = ptseq_parametriz(seq);
 	
 	for (i=0; i<num; i++) {
 		if ((ll = cvhmm_loglik(&(mo[i]), O)) > 1)
 			ll = NAN;
-		if (debug)
-			printf("%d=%.2f ", i, ll);
-
+		
+		if (pf != NULL) {
+			//fprintf(pf, "%d=%.2f ", i, ll);
+			fprintf(pf, "%.2f " , ll);
+		}
 		if (ll > max && !isnan(max)) {
 			max = ll;
 			argmax = i;
 		}
 	}
-	if (debug)
-		printf("\n");
+	/* if (pf != NULL) */
+	/* 	printf("\n"); */
 
 	return argmax;
 }
@@ -146,7 +148,7 @@ int cvhmm_get_gesture_sequence (int posture, CvPoint pt, ptseq *seq)
 	switch (state) {
 	case START:
 		if (posture == CLOSE) {
-			if (++count >= 3) {
+			if (++count >= 5) {
 				state = COLLECT;
 				count = 0;
 				prev = cvPoint(pt.x, pt.y);
@@ -157,7 +159,7 @@ int cvhmm_get_gesture_sequence (int posture, CvPoint pt, ptseq *seq)
 		if (posture == CLOSE) {
 			double dist = point_dist(pt, prev);
 
-			if (dist <= 100 && dist >= 4) {
+			if (dist <= 100 && dist >= 3) {
 				ptseq_add(*seq, pt);
 				prev = cvPoint(pt.x, pt.y);
 				tot++;

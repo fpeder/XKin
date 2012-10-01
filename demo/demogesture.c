@@ -36,8 +36,8 @@
 #include <string.h>
 #include <opencv2/core/core_c.h>
 #include <opencv2/highgui/highgui_c.h>
-#include <libfreenect/libfreenect_sync.h>
-#include <libfreenect/libfreenect_cv.h>
+#include <libfreenect_sync.h>
+#include <libfreenect_cv.h>
 
 #include "../include/libbody.h"
 #include "../include/libhand.h"

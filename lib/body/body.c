@@ -51,7 +51,8 @@
 
 
 static CvHistogram*       get_depth_histogram          (IplImage*);
-static void               get_body_depth_interval      (CvHistogram*, int*);
+static void               get_body_depth_interval      (CvHistogram*, int, int*);
+static float              get_interval_area            (CvHistogram *, int*);
 static void               get_body_image               (IplImage*, IplImage*, int*);
 
 
@@ -67,7 +68,8 @@ static void               get_body_image               (IplImage*, IplImage*, in
 IplImage *body_detection (IplImage *depth)
 {
 	CvHistogram *hist;
-	int interval[2];
+	int interval[2], start=1;
+	float area=0;
 	static IplImage *body=NULL;
 	static IplImage *tmp=NULL;
 
@@ -81,7 +83,14 @@ IplImage *body_detection (IplImage *depth)
 	
 	cvConvertScale(depth, tmp, 255./2048., 0);
 	hist = get_depth_histogram(tmp);
-	get_body_depth_interval(hist, interval);
+
+	do {
+		get_body_depth_interval(hist, start, interval);
+		area = get_interval_area(hist, interval);
+		start = interval[1]+1;
+
+	} while (area < 0.15);
+
 	get_body_image(tmp, body, interval);
 
 	return body;
@@ -115,14 +124,15 @@ static CvHistogram *get_depth_histogram (IplImage *img)
  * support of the depth historgram.
  *
  * \param[in]  depth histrogram
+ * \parma[in]  histogram bin starting point
  * \param[out] interval array (2 elements: min and max depth values)
  */
-static void get_body_depth_interval (CvHistogram *hist, int *interval)
+static void get_body_depth_interval (CvHistogram *hist, int start, int *interval)
 {
 	int i, asd=1;
 	float val;
 
-	for (i=0; i<NBINS-1; i++) {
+	for (i=start; i<NBINS-1; i++) {
 
 		val = cvGetReal1D(hist->bins, i);
 
@@ -140,6 +150,19 @@ static void get_body_depth_interval (CvHistogram *hist, int *interval)
 	}
 }
 
+static float get_interval_area (CvHistogram *hist, int *interval)
+{
+	float area = 0;
+	int i;
+
+	for (i=interval[0]; i<=interval[1]; i++) {
+		area += cvGetReal1D(hist->bins, i);
+	}
+
+	return area; 
+}
+
+
 /*!
  * \brief Mask the depth image according the body interval.
  *
@@ -155,3 +178,6 @@ static void get_body_image (IplImage *img, IplImage *body, int *interval)
 	cvThreshold(img, body, interval[0], 0, CV_THRESH_TOZERO);
 	cvThreshold(img, body, interval[1], 0, CV_THRESH_TOZERO_INV);
 }
+
+
+

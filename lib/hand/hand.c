@@ -69,14 +69,13 @@ IplImage* hand_detection (IplImage *body, int *z)
 	CvSeq *ctr, *prev=NULL, *curr;
 	static IplImage *hand=NULL;
 	
-	if (hand == NULL) {
+	if (hand == NULL) 
 		hand = cvCreateImage(cvGetSize(body), 8, 1);
-	}
-	else {
+	else 
 		cvZero(hand);
-	}
 
 	get_hand_interval(body, thrs);
+	//get_hand_interval_2(body, thrs);
 	get_hand_image(body, hand, thrs);
 
 	*z = eval_hand_depth(thrs);

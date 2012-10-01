@@ -44,6 +44,7 @@
 void draw_classified_hand (CvSeq *cnt, CvPoint cent, int type)
 {
 	CvRect box;
+	char *win = "detection";
 	CvScalar color[] = {CV_RGB(255,0,0),
 			    CV_RGB(0,255,0),
 	                    CV_RGB(0,0,255),
@@ -67,11 +68,10 @@ void draw_classified_hand (CvSeq *cnt, CvPoint cent, int type)
 	cvDrawContours(img, cnt, color[type], CV_RGB(0,0,255), 0,
 		       CV_FILLED, 8, cvPoint(0,0));
 
-	cvFlip(img,NULL,1);
-
-	cvNamedWindow("detection", CV_WINDOW_AUTOSIZE|CV_GUI_NORMAL);
-	cvMoveWindow("detection", 0, 0);
-	cvShowImage("detection", img);
+	//cvFlip(img,NULL,1);
+	cvNamedWindow(win, CV_GUI_NORMAL|CV_WINDOW_AUTOSIZE);
+	cvShowImage(win, img);
+	cvMoveWindow(win, 0, 0);
 }
 
 void draw_contour (CvSeq *seq)

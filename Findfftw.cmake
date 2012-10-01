@@ -21,10 +21,10 @@ include( FindPackageHandleStandardArgs )
 find_package_handle_standard_args( fftw DEFAULT_MSG FFTW_LIBRARIES FFTW_INCLUDE_DIR ) 
 
 mark_as_advanced( FFTW_LIBRARIES FFTW_INCLUDE_DIR )
-if( FREENECT_FOUND )
+if( FFTW_FOUND )
 	include_directories( ${FFTW_INCLUDE_DIR} )
 	message( STATUS "fftw3 found (include: ${FFTW_INCLUDE_DIR}, 
- 				      lib: ${FREENECT_LIBRARIES})")
-endif( FREENECT_FOUND )
+ 				      lib: ${FFTW_LIBRARIES})")
+endif( FFTW_FOUND )
 
-mark_as_advanced( FREENECT_FOUND )
+mark_as_advanced( FFTW_FOUND )

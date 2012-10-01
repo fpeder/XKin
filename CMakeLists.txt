@@ -5,9 +5,7 @@ set( VERSION 1.0.0 )
 set( PACKAGE_NAME ${CMAKE_PROJECT_NAME} )
 
 set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR} )
-find_package( OpenCV REQUIRED COMPONENTS opencv_core 
-                                         opencv_imgproc 
-                                         opencv_highgui )
+find_package( OpenCV REQUIRED COMPONENTS core imgproc highgui )
 find_package( fftw REQUIRED )
 find_package( freenect REQUIRED )
 
@@ -24,5 +22,4 @@ include_directories( "${PROJECT_BINARY_DIR}" )
 add_subdirectory( lib )
 add_subdirectory( tools )
 add_subdirectory( demo )
-
 

@@ -2,7 +2,7 @@
 #define _LIBPOSTURE_H_
 
 enum {
-        FD_NUM=16
+        FD_NUM=8
 };
 
 typedef struct CvPostModel {

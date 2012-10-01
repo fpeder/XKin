@@ -50,6 +50,7 @@ void  reset       (void);
 void  on_mouse    (int, int, int, int, void*);
 
 
+
 int main (int argc, char *argv[]) 
 {
 	CvHMM *mo;
@@ -66,13 +67,13 @@ int main (int argc, char *argv[])
 	cvNamedWindow(win, 0);
 	cvSetMouseCallback(win, on_mouse, 0);
 
+	printf("q:quit  c:clear seq  r:classify seq\n");
+	
 	for (;;) {
 		int c, r;
 		
 		cvShowImage(win, img);
 		c = cvWaitKey(50);
-
-		printf("q:quit  c:clear seq  r:classify seq\n");
 		
 		if (c == 'q') {
 			break;
@@ -85,7 +86,7 @@ int main (int argc, char *argv[])
 		else if (c == 'r') {
 			int asd;
 			
-			asd = cvhmm_classify_gesture(mo, num, seq, 1);
+			asd = cvhmm_classify_gesture(mo, num, seq, stdout);
 			printf("-->%d\n", asd);
 			reset();
 		}

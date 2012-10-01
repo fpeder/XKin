@@ -50,8 +50,8 @@
 #include "const.h"
 #include "transform.h"
 
-#define XOFF 20
-#define YOFF 20
+#define XOFF 20 //20
+#define YOFF 20 //20
 
 const calibParams depthcal = { 5.9421434211923247e+02,
 			       5.9104053696870778e+02,
