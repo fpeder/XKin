@@ -48,6 +48,7 @@ enum {
         W=640,
         H=480,
         T=10,
+	N=5
 };
 
 char *infile = NULL;
@@ -64,14 +65,23 @@ int main (int argc, char *argv[])
 	int num, count=0;
 	char *w1 = "rgb", *w2 = "number";
 	char buff[5];
-	CvFont font; 
+	CvFont font[N];
+	CvScalar color[N]; 
 
 	parse_args(argc,argv);
 	num = load_posture_models(infile, &models);
 	rgb = cvCreateImage(cvSize(W,H), 8, 3);
 	number = cvCreateImage(cvSize(256,256), 8, 3);
-	font = cvFontQt("Helvetica", 200, CV_RGB(255,0,0), CV_FONT_NORMAL,
-			CV_STYLE_NORMAL, 0);
+	color[0] = CV_RGB(0,0,255);
+	color[1] = CV_RGB(0,255,0);
+	color[2] = CV_RGB(255,0,0);
+	color[3] = CV_RGB(255,0,255);
+	color[4] = CV_RGB(0,255,255);
+
+	int i;
+	for (i=0; i<N; i++)
+		font[i] = cvFontQt("Helvetica", 200, color[i], CV_FONT_NORMAL,
+				   CV_STYLE_NORMAL, 0);
 
 	cvNamedWindow(w1, WT);
 	cvNamedWindow(w2, WT);
@@ -99,7 +109,7 @@ int main (int argc, char *argv[])
 		cvMoveWindow(w1, 640, 0);
 		sprintf(buff, "%d", p+1);
 		cvZero(number);
-		cvAddText(number, buff, cvPoint(80,190), &font);
+		cvAddText(number, buff, cvPoint(80,190), &(font[p]));
 		cvShowImage(w2, number);
 		cvMoveWindow(w2, 0, 530);
 
